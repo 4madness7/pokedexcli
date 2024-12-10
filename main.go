@@ -3,13 +3,15 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"net/http"
 	"os"
 	"strings"
+	"time"
+
+	"github.com/4madness7/pokedexcli/internal/pokeapi"
 )
 
 type config struct {
-	Client   *http.Client
+	Client   pokeapi.Client
 	Next     *string
 	Previous *string
 }
@@ -21,8 +23,9 @@ type cliCommand struct {
 }
 
 func main() {
+    client := pokeapi.NewClient(8 * time.Second)
 	cfg := &config{
-		Client: &http.Client{},
+		Client: client,
 	}
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
