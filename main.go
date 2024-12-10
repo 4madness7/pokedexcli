@@ -2,27 +2,11 @@ package main
 
 import (
 	"bufio"
-	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
 	"strings"
 )
-
-const (
-	baseURL = "https://pokeapi.co/api/v2/"
-)
-
-type DataLocationArea struct {
-	Count    int     `json:"count"`
-	Next     *string `json:"next"`
-	Previous *string `json:"previous"`
-	Results  []struct {
-		Name string `json:"name"`
-		Url  string `json:"url"`
-	} `json:"results"`
-}
 
 type config struct {
 	Client   *http.Client
@@ -96,75 +80,3 @@ func getCommands() map[string]cliCommand {
 	}
 }
 
-func getLocationArea(path *string, cfg *config) (DataLocationArea, error) {
-	res, err := cfg.Client.Get(*path)
-	if err != nil {
-		return DataLocationArea{}, err
-	}
-	defer res.Body.Close()
-
-	data, err := io.ReadAll(res.Body)
-	if err != nil {
-		return DataLocationArea{}, err
-	}
-
-	var values DataLocationArea
-	err = json.Unmarshal(data, &values)
-	if err != nil {
-		return DataLocationArea{}, err
-	}
-
-    cfg.Next = values.Next
-    cfg.Previous = values.Previous
-
-	return values, nil
-}
-
-func mapfCallback(cfg *config) error {
-	fullPath := baseURL + "location-area/"
-    if cfg.Next != nil {
-        fullPath = *cfg.Next
-    }
-
-    values, err := getLocationArea(&fullPath, cfg)
-    if err != nil {
-        return fmt.Errorf("Could not find areas: %w", err)
-    }
-
-    for i, val := range values.Results {
-        fmt.Printf("%d. %s -> %s\n", i, val.Name, val.Url)
-    }
-	return nil
-}
-
-func mapbCallback(cfg *config) error {
-	fullPath := baseURL + "location-area/"
-    if cfg.Previous != nil {
-        fullPath = *cfg.Previous
-    }
-
-    values, err := getLocationArea(&fullPath, cfg)
-    if err != nil {
-        return fmt.Errorf("Could not find areas: %w", err)
-    }
-
-    for i, val := range values.Results {
-        fmt.Printf("%d. %s -> %s\n", i, val.Name, val.Url)
-    }
-	return nil
-}
-
-func helpCallback(cfg *config) error {
-	fmt.Printf("== Help menu ==\n\n")
-	fmt.Printf("Command\t\tDescription\n------------------------------\n")
-	for k, v := range getCommands() {
-		fmt.Printf("%s\t\t%s\n", k, v.description)
-	}
-	fmt.Println("------------------------------")
-	return nil
-}
-
-func exitCallback(cfg *config) error {
-	os.Exit(0)
-	return nil
-}
