@@ -8,12 +8,10 @@ import (
 	"time"
 
 	"github.com/4madness7/pokedexcli/internal/pokeapi"
-	"github.com/4madness7/pokedexcli/internal/pokecache"
 )
 
 type config struct {
 	Client   pokeapi.Client
-	Cache    pokecache.Cache
 	Next     *string
 	Previous *string
 }
@@ -28,7 +26,6 @@ func main() {
 	client := pokeapi.NewClient(5 * time.Second)
 	cfg := &config{
 		Client: client,
-		Cache:  pokecache.NewCache(5 * time.Second),
 	}
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
