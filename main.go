@@ -19,7 +19,7 @@ type config struct {
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*config, []string) error
+	callback    func(*config, ...string) error
 }
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 		command, exists := getCommands()[commandName]
 		if exists {
-            err := command.callback(cfg, words[1:])
+            err := command.callback(cfg, words[1:]...)
 			if err != nil {
 				fmt.Println(err)
 			}

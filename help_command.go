@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-func helpCallback(cfg *config, args []string) error {
+func helpCallback(cfg *config, args ...string) error {
     if len(args) > 0 {
         return fmt.Errorf("Error: too many arguments. 0 arguments expected, %d provided.", len(args))
     }

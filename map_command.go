@@ -5,7 +5,7 @@ import (
 	"github.com/4madness7/pokedexcli/internal/pokeapi"
 )
 
-func mapfCallback(cfg *config, args []string) error {
+func mapfCallback(cfg *config, args ...string) error {
 	if len(args) > 0 {
 		return fmt.Errorf("Error: too many arguments. 0 arguments expected, %d provided.", len(args))
 	}
@@ -23,7 +23,7 @@ func mapfCallback(cfg *config, args []string) error {
 	return nil
 }
 
-func mapbCallback(cfg *config, args []string) error {
+func mapbCallback(cfg *config, args ...string) error {
 	if len(args) > 0 {
 		return fmt.Errorf("Error: too many arguments. 0 arguments expected, %d provided.", len(args))
 	}
