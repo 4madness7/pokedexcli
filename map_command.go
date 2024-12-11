@@ -6,7 +6,11 @@ import (
 	"github.com/4madness7/pokedexcli/internal/pokeapi"
 )
 
-func mapfCallback(cfg *config) error {
+func mapfCallback(cfg *config, args []string) error {
+    if len(args) > 0 {
+        return fmt.Errorf("Error: too many arguments. 0 arguments expected, %d provided.", len(args))
+    }
+
 	var locations *pokeapi.DataLocationArea
 
 	if cfg.Next != nil {
@@ -38,7 +42,11 @@ func mapfCallback(cfg *config) error {
 	return nil
 }
 
-func mapbCallback(cfg *config) error {
+func mapbCallback(cfg *config, args []string) error {
+    if len(args) > 0 {
+        return fmt.Errorf("Error: too many arguments. 0 arguments expected, %d provided.", len(args))
+    }
+
 	if cfg.Previous == nil {
 		return fmt.Errorf("Error: you are in the first page")
 	}
