@@ -8,10 +8,12 @@ import (
 	"time"
 
 	"github.com/4madness7/pokedexcli/internal/pokeapi"
+	"github.com/4madness7/pokedexcli/internal/pokecache"
 )
 
 type config struct {
 	Client   pokeapi.Client
+	Cache    pokecache.Cache
 	Next     *string
 	Previous *string
 }
@@ -23,9 +25,10 @@ type cliCommand struct {
 }
 
 func main() {
-    client := pokeapi.NewClient(8 * time.Second)
+	client := pokeapi.NewClient(5 * time.Second)
 	cfg := &config{
 		Client: client,
+		Cache:  pokecache.NewCache(5 * time.Second),
 	}
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
@@ -73,13 +76,12 @@ func getCommands() map[string]cliCommand {
 		"map": {
 			name:        "map",
 			description: "Move to next 20 iteration of location",
-			callback: mapfCallback,
+			callback:    mapfCallback,
 		},
 		"mapb": {
 			name:        "mapb",
 			description: "Move to prev 20 iteration of location",
-			callback: mapbCallback,
+			callback:    mapbCallback,
 		},
 	}
 }
-

@@ -1,39 +1,78 @@
 package main
 
 import (
-    "fmt"
+	"encoding/json"
+	"fmt"
+	"github.com/4madness7/pokedexcli/internal/pokeapi"
 )
 
 func mapfCallback(cfg *config) error {
-    locations, err := cfg.Client.ListLocations(cfg.Next)
-    if err != nil {
-        return fmt.Errorf("Could not find areas: %w", err)
-    }
+	var locations *pokeapi.DataLocationArea
 
-    cfg.Next = locations.Next
-    cfg.Previous = locations.Previous
+	if cfg.Next != nil {
+		data, exists := cfg.Cache.Get(*cfg.Next)
+		if exists {
+			locationsNew := pokeapi.DataLocationArea{}
+			err := json.Unmarshal(data, &locationsNew)
+			if err != nil {
+				return fmt.Errorf("Could not find areas: %w", err)
+			}
+			locations = &locationsNew
+		}
+	}
 
-    for i, val := range locations.Results {
-        fmt.Printf("%d. %s -> %s\n", i, val.Name, val.Url)
-    }
+	if locations == nil {
+		fmt.Println("=== Making a request to Pokeapi! ===")
+		locationsResp, err := cfg.Client.ListLocations(cfg.Next, &cfg.Cache)
+		if err != nil {
+			return fmt.Errorf("Could not find areas: %w", err)
+		}
+		locations = &locationsResp
+	}
+
+	cfg.Next = locations.Next
+	cfg.Previous = locations.Previous
+
+    printingLocations(locations)
+
 	return nil
 }
 
 func mapbCallback(cfg *config) error {
-    if cfg.Previous == nil {
-        return fmt.Errorf("Error: you are in the first page")
-    }
+	if cfg.Previous == nil {
+		return fmt.Errorf("Error: you are in the first page")
+	}
 
-    locations, err := cfg.Client.ListLocations(cfg.Previous)
-    if err != nil {
-        return fmt.Errorf("Could not find areas: %w", err)
-    }
+	var locations *pokeapi.DataLocationArea
 
-    cfg.Next = locations.Next
-    cfg.Previous = locations.Previous
+	data, exists := cfg.Cache.Get(*cfg.Previous)
+	if exists {
+		locationsNew := pokeapi.DataLocationArea{}
+		err := json.Unmarshal(data, &locationsNew)
+		if err != nil {
+			return fmt.Errorf("Could not find areas: %w", err)
+		}
+		locations = &locationsNew
+	}
+	if locations == nil {
+		fmt.Println("=== Making a request to Pokeapi! ===")
+		locationsResp, err := cfg.Client.ListLocations(cfg.Previous, &cfg.Cache)
+		if err != nil {
+			return fmt.Errorf("Could not find areas: %w", err)
+		}
+		locations = &locationsResp
+	}
 
-    for i, val := range locations.Results {
-        fmt.Printf("%d. %s -> %s\n", i, val.Name, val.Url)
-    }
+	cfg.Next = locations.Next
+	cfg.Previous = locations.Previous
+
+    printingLocations(locations)
+
 	return nil
+}
+
+func printingLocations(data *pokeapi.DataLocationArea) {
+	for _, val := range data.Results {
+		fmt.Println(val.Name)
+	}
 }
