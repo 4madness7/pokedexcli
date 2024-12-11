@@ -26,7 +26,6 @@ func mapfCallback(cfg *config, args []string) error {
 	}
 
 	if locations == nil {
-		fmt.Println("=== Making a request to Pokeapi! ===")
 		locationsResp, err := cfg.Client.ListLocations(cfg.Next, &cfg.Cache)
 		if err != nil {
 			return fmt.Errorf("Could not find areas: %w", err)
@@ -63,7 +62,6 @@ func mapbCallback(cfg *config, args []string) error {
 		locations = &locationsNew
 	}
 	if locations == nil {
-		fmt.Println("=== Making a request to Pokeapi! ===")
 		locationsResp, err := cfg.Client.ListLocations(cfg.Previous, &cfg.Cache)
 		if err != nil {
 			return fmt.Errorf("Could not find areas: %w", err)
