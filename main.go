@@ -11,9 +11,10 @@ import (
 )
 
 type config struct {
-	Client   pokeapi.Client
-	Next     *string
-	Previous *string
+	Client         pokeapi.Client
+	CaughtPokemons map[string]pokeapi.Pokemon
+	Next           *string
+	Previous       *string
 }
 
 type cliCommand struct {
@@ -25,6 +26,7 @@ type cliCommand struct {
 func main() {
 	client := pokeapi.NewClient(5 * time.Second)
 	cfg := &config{
+        CaughtPokemons: map[string]pokeapi.Pokemon{},
 		Client: client,
 	}
 	scanner := bufio.NewScanner(os.Stdin)
@@ -40,7 +42,7 @@ func main() {
 
 		command, exists := getCommands()[commandName]
 		if exists {
-            err := command.callback(cfg, words[1:]...)
+			err := command.callback(cfg, words[1:]...)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -84,6 +86,11 @@ func getCommands() map[string]cliCommand {
 			name:        "explore",
 			description: "Explore specified area. (eg. explore <area-name>)",
 			callback:    exploreCallback,
+		},
+		"catch": {
+			name:        "catch",
+			description: "Try catching specified Pokémon (eg. catch <pokémon-name>)",
+			callback:    catchCallback,
 		},
 	}
 }
