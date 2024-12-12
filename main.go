@@ -24,10 +24,10 @@ type cliCommand struct {
 }
 
 func main() {
-	client := pokeapi.NewClient(5 * time.Second)
+	client := pokeapi.NewClient(5*time.Second, 5*time.Minute)
 	cfg := &config{
-        CaughtPokemons: map[string]pokeapi.Pokemon{},
-		Client: client,
+		CaughtPokemons: map[string]pokeapi.Pokemon{},
+		Client:         client,
 	}
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
